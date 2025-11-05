@@ -43,9 +43,10 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.EnsureCreated();
 
+   
     if (!db.Students.Any())
     {
-        var faker = new Faker<StudentEntity>("tr")
+        var faker = new Faker<StudentEntity>("en")
             .RuleFor(s => s.FirstName, f => f.Name.FirstName())
             .RuleFor(s => s.LastName, f => f.Name.LastName())
             .RuleFor(s => s.StudentNumber, f => f.Random.Number(1000, 9999).ToString())

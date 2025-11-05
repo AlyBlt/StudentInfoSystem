@@ -48,6 +48,18 @@ namespace App.Api.Controllers
             return newNumber;
         }
 
+        private string ToTitleCase(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return input;
+
+            // Tümünü küçük yap
+            input = input.ToLowerInvariant();
+
+            // İlk harfi büyük yap
+            return char.ToUpperInvariant(input[0]) + input.Substring(1);
+        }
+
         // GET api/students
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -85,6 +97,9 @@ namespace App.Api.Controllers
             // Generate unique StudentNumber for Post (no ID needed)
             student.StudentNumber = await GenerateUniqueStudentNumberForPost(student.StudentNumber);
 
+            student.FirstName = ToTitleCase(student.FirstName);
+            student.LastName = ToTitleCase(student.LastName);
+
             _context.Students.Add(student);
             try
             {
@@ -114,8 +129,8 @@ namespace App.Api.Controllers
             student.StudentNumber = await GenerateUniqueStudentNumber(student.StudentNumber, id);
 
             // Update fields
-            existingStudent.FirstName = student.FirstName;
-            existingStudent.LastName = student.LastName;
+            existingStudent.FirstName = ToTitleCase(student.FirstName);
+            existingStudent.LastName = ToTitleCase(student.LastName);
             existingStudent.StudentNumber = student.StudentNumber;
             existingStudent.Grade = student.Grade;
             existingStudent.Email = student.Email;
