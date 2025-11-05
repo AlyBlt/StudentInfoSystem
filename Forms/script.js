@@ -1,0 +1,104 @@
+const apiUrl = "https://localhost:7042/api/students";
+const modalElement = document.getElementById("studentModal");
+const studentModal = new bootstrap.Modal(modalElement);
+const form = document.getElementById("studentForm");
+const modalTitle = document.getElementById("modalTitle");
+
+let isEdit = false;
+let editId = null;
+
+document.getElementById("openCreateModal").addEventListener("click", () => openModal(false));
+
+// Modal açma
+function openModal(edit = false, student = null) {
+    isEdit = edit;
+    form.reset();
+
+    if (edit && student) {
+        modalTitle.textContent = "Update Student";
+        document.getElementById("studentId").value = student.id;
+        document.getElementById("firstName").value = student.firstName;
+        document.getElementById("lastName").value = student.lastName;
+        document.getElementById("studentNumber").value = student.studentNumber;
+        document.getElementById("grade").value = student.grade;
+        document.getElementById("email").value = student.email || "";
+        editId = student.id;
+    } else {
+        modalTitle.textContent = "Add Student";
+        editId = null;
+    }
+
+    studentModal.show();
+}
+
+// Tabloyu yükleme
+async function loadStudents() {
+    const res = await fetch(apiUrl);
+    const data = await res.json();
+    const tbody = document.querySelector("#studentTable tbody");
+
+    tbody.innerHTML = "";
+
+    data.forEach(s => {
+        const row = `
+      <tr>
+        <td>${s.id}</td>
+        <td>${s.firstName}</td>
+        <td>${s.lastName}</td>
+        <td>${s.studentNumber}</td>
+        <td>${s.grade}</td>
+        <td>${s.email || ""}</td>
+        <td>
+          <button class="btn btn-warning btn-sm me-1" onclick='openModal(true, ${JSON.stringify(s).replace(/"/g, '&quot;')})'>Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteStudent(${s.id})">Delete</button>
+        </td>
+      </tr>`;
+        tbody.innerHTML += row;
+    });
+}
+
+// Delete
+async function deleteStudent(id) {
+    if (!confirm("Are you sure you want to delete this student?")) return;
+    await fetch(`${apiUrl}/${id}`, { method: "DELETE" });
+    loadStudents();
+}
+
+// Save (POST veya PUT)
+form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const student = {
+        firstName: document.getElementById("firstName").value.trim(),
+        lastName: document.getElementById("lastName").value.trim(),
+        studentNumber: document.getElementById("studentNumber").value.trim(),
+        grade: parseInt(document.getElementById("grade").value),
+        email: document.getElementById("email").value.trim() || null
+    };
+
+    if (!student.firstName || !student.lastName || !student.studentNumber) {
+        alert("Please fill in all required fields.");
+        return;
+    }
+
+    try {
+        const res = await fetch(isEdit ? `${apiUrl}/${editId}` : apiUrl, {
+            method: isEdit ? "PUT" : "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: editId, ...student })
+        });
+
+        if (res.ok) {
+            alert(isEdit ? "Student updated successfully!" : "Student added successfully!");
+            studentModal.hide();
+            loadStudents();
+        } else {
+            const err = await res.text();
+            alert("Error: " + err);
+        }
+    } catch (error) {
+        alert("Connection error: " + error);
+    }
+});
+
+loadStudents();
