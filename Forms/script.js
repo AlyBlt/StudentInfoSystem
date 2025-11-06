@@ -86,11 +86,15 @@ form.addEventListener("submit", async (e) => {
         email: document.getElementById("email").value.trim() || null
     };
 
+    const payload = isEdit
+        ? { id: editId, ...student }
+        : student;
+
     try {
         const res = await fetch(isEdit ? `${apiUrl}/${editId}` : apiUrl, {
             method: isEdit ? "PUT" : "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id: editId, ...student })
+            body: JSON.stringify(payload)
         });
 
         if (res.ok) {
@@ -104,5 +108,14 @@ form.addEventListener("submit", async (e) => {
         alert("Connection error: " + error);
     }
 });
+// Search function
+document.getElementById("searchInput").addEventListener("input", function () {
+    const filter = this.value.toLowerCase();
+    const rows = document.querySelectorAll("#studentTable tbody tr");
 
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(filter) ? "" : "none";
+    });
+});
 loadStudents();

@@ -117,10 +117,14 @@ namespace App.Api.Controllers
         // PUT api/students/{id}
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Consumes("application/json")]
         public async Task<IActionResult> Update(int id, [FromBody] StudentEntity student)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var existingStudent = await _context.Students.FindAsync(id);
             if (existingStudent == null)
                 return NotFound(new { message = $"Student with the given Id: {id} was not found." });

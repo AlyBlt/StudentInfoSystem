@@ -12,6 +12,9 @@
     <div class="container-fluid mt-4 mb-0">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2 class="text-muted">Student Information System</h2>
+            <div class="d-flex align-items-center gap-2">
+                <input id="searchInput" type="text" class="form-control form-control-sm" placeholder="Search student...">
+             </div>
             <button id="openCreateModal" class="btn">Add Student</button>
         </div>
         <div class="table-responsive">
@@ -24,7 +27,7 @@
                         <th class="text-center">Student Number</th>
                         <th class="text-center">Grade</th>
                         <th class="text-start">Email</th>
-                        <th class="text-center">Actions</th>
+                        <th class="text-end pe-5">Actions</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -45,12 +48,12 @@
                         <input type="hidden" id="studentId">
                         <div class="mb-3">
                             <label for="firstName" class="form-label">First Name *</label>
-                            <input type="text" class="form-control" id="firstName" required>
+                            <input type="text" class="form-control" id="firstName" required pattern="^[a-zA-ZçÇğĞıİöÖşŞüÜ\s]+$" title="First Name should contain letters only.">
                             <div class="invalid-feedback">First Name is required and should contain letters only.</div>
                         </div>
                         <div class="mb-3">
                             <label for="lastName" class="form-label">Last Name *</label>
-                            <input type="text" class="form-control" id="lastName" required>
+                            <input type="text" class="form-control" id="lastName" required pattern="^[a-zA-ZçÇğĞıİöÖşŞüÜ\s]+$" title="Last Name should contain letters only.">
                             <div class="invalid-feedback">Last Name is required and should contain letters only.</div>
                         </div>
                         <div class="mb-3">
